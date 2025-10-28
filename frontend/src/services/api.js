@@ -57,8 +57,12 @@ export const postService = {
         const response = await API.get(`/comments/${id}`)
         return response
     },
-    async postComment(id, comment) {
-      await API.post(`/comments/${Number(id)}`, {'comment':comment})
+    async postComment(id, comment, token) {
+      await API.post(`/comments/${Number(id)}`, {'comment':comment}, {
+      headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }})
     },
     async postRegistration(login, age, password) {
       const response = await API.post('/reg', {'login':login, 'age':Number(age), 'password':password})

@@ -153,6 +153,7 @@ def get_comments(post_id:int, db = Depends(get_db)):
 
 
 @app.post('/comments/{post_id}')
-def add_comment(post_id:int, data: CommentHandler,  db = Depends(get_db)):
-    db.add(Comment(post_id = post_id, content = data.comment))
+def add_comment(post_id:int, data: CommentHandler,  db = Depends(get_db),
+                 credentials: JwtAuthorizationCredentials = Security(access_security)):
+    db.add(Comment(post_id = post_id, content = data.comment, author = credentials.subject['login']))
     db.commit()

@@ -1,14 +1,16 @@
 <template>
     <div class="header">
         <h1>Регистрация</h1>
+        <nav class="nav">
         <router-link to="/">На главную</router-link>
-        <p>Уже есть аккаунт? <router-link to="/auth">Авторизация</router-link></p>
+        <router-link to="/auth">Авторизация</router-link>
+    </nav>
     </div>
 
     <div class="main">
-        <form @submit.prevent="sendData">
+        <form @submit.prevent="sendData" class="new-post">
             <p><input placeholder="логин" v-model="login"/></p>
-            <p><input placeholder="возраст" v-model="age"/></p>
+            <p><input placeholder="возраст" v-model="age" type="number"/></p>
             <p><input placeholder="пароль" v-model="password"/></p>
             <p><button type="submit" @click="redirectToPage">Зарегистрироваться</button></p>
         </form>

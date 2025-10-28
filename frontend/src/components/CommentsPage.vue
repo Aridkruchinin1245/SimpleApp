@@ -1,7 +1,9 @@
 <template>
  <div class="header">
-    <h1>Комментарии к посту {{ id }}</h1>
-    <router-link to="/">На главную</router-link>
+    <h1 class="logo">Комментарии к посту {{ id }}</h1>
+    <nav class="nav">
+     <router-link to="/">На главную</router-link> 
+    </nav>
  </div>
  <div class="main">
    <div class="write_comment">
@@ -12,9 +14,9 @@
    </div>
    <div v-if="comments">
       <div class="comment_space" v-for="comment in comments.data" :key="comment.id">
-         <div class="comment">
-            <div>{{ comment.author }}</div>
-            <div>{{ comment.date }}</div>
+         <div class="post">
+            <div class="timestamp">в: {{ comment.date }}</div>
+            <div class="username">от: {{ comment.author }}</div>
             <div>{{ comment.content }}</div>
          </div>
       </div>
@@ -29,6 +31,7 @@
    import {ref, onMounted} from 'vue'
    import { postService } from '@/services/api';
    import { useRoute } from 'vue-router';
+import { auth } from '@/utils/auth';
 
    export default {
       setup() {
@@ -41,7 +44,8 @@
             comments.value = await postService.getComments(id)
          }
          const addComment = async() => {
-            await postService.postComment(id, comment.value)
+            console.log(auth.getToken())
+            await postService.postComment(id, comment.value, auth.getToken())
             comment.value = ''
             await showComments()
          }

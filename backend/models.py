@@ -69,4 +69,5 @@ class User(Base):
     age = Column(Integer)
     login = Column(String)
     password = Column(String)
+    author = Column(String)
 
