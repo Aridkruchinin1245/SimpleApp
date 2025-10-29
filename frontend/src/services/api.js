@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const API = axios.create({
-  baseURL: process.env.VUE_APP_API_URL || 'http://localhost:8000',
+  baseURL: process.env.VUE_APP_API_URL || 'http://192.168.1.3:8000',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -80,5 +80,9 @@ export const postService = {
     async sendAuthorisation(login, password) {
       const token = API.post('/auth', {'login':login, 'password':password})
       return token
+    },
+    async get_weather(city) {
+      const data = API.get(`/weather/${city}`)
+      return data
     }
 }

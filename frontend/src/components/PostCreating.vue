@@ -5,7 +5,7 @@
     </div>
 
     <div class="main">
-        <form @submit.prevent="sendData">
+        <form @submit.prevent="sendData()">
             <p><textarea rows="10" class="big_text" v-model="content" placeholder="Текст"/></p>
             <div v-if="content.length > 10">
                 <p>

@@ -1,6 +1,6 @@
 <template>
     <div class="header">
-        <h1>Регистрация</h1>
+        <h1 class="logo">Регистрация</h1>
         <nav class="nav">
         <router-link to="/">На главную</router-link>
         <router-link to="/auth">Авторизация</router-link>

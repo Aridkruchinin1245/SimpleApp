@@ -6,6 +6,7 @@ import AuthorsPage from '@/components/AuthorsPage.vue'
 import CommentsPage from '@/components/CommentsPage.vue'
 import RegistrationPage from '@/components/RegistrationPage.vue'
 import AuthPage from '@/components/AuthPage.vue'
+import WeatherComponent from '@/components/WeatherComponent.vue'
 
 const routes = [
   {
@@ -38,6 +39,11 @@ const routes = [
     path: '/auth',
     name : 'authentication',
     component : AuthPage
+  },
+  {
+    path: '/weather',
+    name : 'weather',
+    component : WeatherComponent
   },
 ]
 

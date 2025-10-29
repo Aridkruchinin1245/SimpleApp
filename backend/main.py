@@ -6,6 +6,7 @@ from models import Base, Post, PostCreate, CommandHandler, CommentHandler, Comme
 from database import engine, SessionLocal
 from sqlalchemy import text, select
 from fastapi_jwt import JwtAccessBearer, JwtAuthorizationCredentials
+from utils.weather_api import get_weather
 
 app = FastAPI()
 
@@ -157,3 +158,9 @@ def add_comment(post_id:int, data: CommentHandler,  db = Depends(get_db),
                  credentials: JwtAuthorizationCredentials = Security(access_security)):
     db.add(Comment(post_id = post_id, content = data.comment, author = credentials.subject['login']))
     db.commit()
+
+
+@app.get('/weather/{city_name}')
+def make_weather(city_name:str):
+   data = get_weather(city_name)
+   return data

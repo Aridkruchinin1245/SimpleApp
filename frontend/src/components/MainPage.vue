@@ -175,6 +175,7 @@
                 <router-link to="/">Главная</router-link>
                 <router-link to="/auth">Авторизация</router-link>
                 <router-link to="/reg">Регистрация</router-link>
+                <router-link to="/weather">Погода</router-link>
                 <a href="#">Сообщества</a>
                 <a href="#">Поиск убежищ</a>
             </nav>
@@ -208,25 +209,13 @@
             </div>
 
             <aside class="sidebar">
-                <div class="online-users">
-                    <h3>Онлайн сейчас (127)</h3>
+                <!-- <div class="online-users">
+                    <h3>Наши сталкеры</h3>
                     <div class="user">
                         <div class="status-dot"></div>
                         <span>Raider_Killer</span>
                     </div>
-                    <div class="user">
-                        <div class="status-dot"></div>
-                        <span>Water_Merchant</span>
-                    </div>
-                    <div class="user">
-                        <div class="status-dot"></div>
-                        <span>Tech_Scavenger</span>
-                    </div>
-                    <div class="user">
-                        <div class="status-dot"></div>
-                        <span>Zone_Guide</span>
-                    </div>
-                </div>
+                </div> -->
 
                 <div class="community-rules">
                     <h3>Правила выживания</h3>
