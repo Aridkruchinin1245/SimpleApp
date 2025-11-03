@@ -96,7 +96,7 @@
         auth.removeToken()
       }
       const sendPost = async() => {
-          if (auth.getToken()) {
+          if (auth.getToken().length>0) {
           await postService.addPost(content.value, auth.getToken())
           content.value = ''
           fetchItems() 
@@ -230,7 +230,7 @@
         </div>
 
         <footer class="footer">
-            <p>Nuclear Forum © 2024 | Связь через ретрансляторы | Выживаем вместе</p>
+            <p>Nuclear Forum © 2024 | Связь через ретрансляторы | favicon.ico принадлежит freepic</p>
         </footer>
     </div>
 </body>

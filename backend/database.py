@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "sqlite:///../database/database.db?mode=rwc"
+DATABASE_URL = "sqlite:///database/database.db"
 
 engine = create_engine(
     url = DATABASE_URL,

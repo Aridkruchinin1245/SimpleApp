@@ -24,9 +24,9 @@ class CommentHandler(BaseModel):
 
 
 class RegistrationHandler(BaseModel):
-    login: str
-    age: int
-    password: str
+    login: str = Field(min_length=3)
+    age: int = Field(min=0, max=120)
+    password: str = Field(min_length=5)
 
 
 class AuthorisationHandler(BaseModel):
@@ -39,7 +39,7 @@ class Post(Base):
     id = Column(Integer, primary_key=True, index=True)
     content = Column(String)
     author = Column(String)
-    date = Column(DateTime, default=datetime.now())
+    date = Column(DateTime, default=datetime.now)
     likes = Column(Integer)
     dislikes = Column(Integer)
     comments = relationship('Comment')
@@ -48,8 +48,10 @@ class Post(Base):
         data = {}
         for c in self.__table__.columns:
             value = getattr(self, c.name)
+
             if isinstance(value, datetime):
-                value = value.isoformat().split(':')[0].split('T')[0]
+                value = value.isoformat().split('T')[0] + ' ' + value.isoformat().split('T')[1].split('.')[0]
+
             data[c.name] = value
         return data
 

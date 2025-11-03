@@ -2,20 +2,24 @@ from fastapi import FastAPI, Depends, Response, Header, Security, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from models import Base, Post, PostCreate, CommandHandler, CommentHandler, Comment, RegistrationHandler, nameHandler, User, AuthorisationHandler
-from database import engine, SessionLocal
+from backend.models import Base, Post, PostCreate, CommandHandler, CommentHandler, Comment, RegistrationHandler, nameHandler, User, AuthorisationHandler
+from backend.database import engine, SessionLocal
 from sqlalchemy import text, select
 from fastapi_jwt import JwtAccessBearer, JwtAuthorizationCredentials
-from utils.weather_api import get_weather
+from .utils.weather_api import get_weather
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = FastAPI()
 
-access_security = JwtAccessBearer(secret_key='very_secret_key')
+access_security = JwtAccessBearer(secret_key=os.getenv('SECRET_KEY'))
 
 try:
     Base.metadata.create_all(bind=engine)
 except Exception as e:
-    print(f'Ошибка при создании таблиц {e}')
+    raise HTTPException(status_code=500, detail=f'Ошибка при создании таблиц: {e}')
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,8 +31,11 @@ app.add_middleware(
 
 
 def create_token(data : dict):
-    token = access_security.create_access_token(subject=data)
-    return token
+    try:
+        token = access_security.create_access_token(subject=data)
+        return token
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Ошибка создания токена {e}')
 
 
 def get_subject(credentials: JwtAuthorizationCredentials = Security(access_security)):
@@ -44,8 +51,11 @@ async def get_db():
 
 @app.post('/getName')
 def get_name(credentials: JwtAuthorizationCredentials = Security(access_security)):
-    data = credentials.subject
-    return Response(data['login'])
+    try:
+        data = credentials.subject
+        return Response(data['login'])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Ошибка получения credentials.subject {e}')
 
 
 @app.post('/auth')
@@ -53,24 +63,27 @@ def authorisation(data : AuthorisationHandler, db = Depends(get_db)):
     data = dict(data)
     data = db.query(User).filter(User.login == data['login'], User.password == data['password']).first()
     db.commit()
+    
     if data:
         data = {'login':data.login, 'password':data.password}
         token = access_security.create_access_token(subject=data)
         return token
     else:
-        return HTTPException(status_code=404, detail='Пользователь не найден')
+        raise HTTPException(status_code=404, detail='Пользователь не найден')
 
 
 @app.post('/reg')
 def registration(data: RegistrationHandler, db = Depends(get_db)):
     data = dict(data)
     check = db.query(User).filter(User.login == data['login']).first()
-    print(check)
+    
     if check == None:
         db.add(User(age = data['age'], login = data['login'], password = data['password']))
         db.commit()
         token = create_token(data=dict(data))
-        return {'token':token}
+        return {'token' : token}
+    else: 
+        return {'error' : check}
 
 
 @app.get('/items')
@@ -83,20 +96,22 @@ async def get_items(db = Depends(get_db)):
             items.append(item.to_dict())
 
         return JSONResponse(content={'data': items, 'user' : user})
+    
     except Exception as e:
-        print(f'ошибка вывода постов {e}')
+        raise HTTPException(status_code=500, detail=f'Ошибка вывода постов {e}')
 
 
 @app.post('/postCreate')
 async def catch_post(post: PostCreate,
-                      db = Depends(get_db),
-                        credentials: JwtAuthorizationCredentials = Security(access_security)):
+            db = Depends(get_db),
+            credentials: JwtAuthorizationCredentials = Security(access_security)):
+    
     try:
         db.add(Post(content = post.content, author = credentials['login'],
                     likes = 0, dislikes = 0))
         db.commit()
-    except:
-        print('ошибка создания поста')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Ошибка создания поста {e}')
 
 
 @app.post('/postDelete')
@@ -104,8 +119,8 @@ async def delete_data(command: CommandHandler, db = Depends(get_db)):
     try:
         db.execute(text("DELETE FROM Posts"))
         db.commit()
-    except:
-        print('ошибка удаления базы данных')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Ошибка удаления БД {e}')
 
 
 @app.get('/addDislike/{id}')
@@ -143,24 +158,34 @@ def get_authors(db = Depends(get_db)):
         authors = list(row[0] for row in data)
         return {'data': authors}
 
-    except:
-        print('ошибка вывода авторов')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Ошибка вывода авторов {e}')
 
 
 @app.get('/comments/{post_id}')
 def get_comments(post_id:int, db = Depends(get_db)):
-    data = db.query(Comment).filter(Comment.post_id == post_id).all()
-    return {'data':data}
+    try:
+        data = db.query(Comment).filter(Comment.post_id == post_id).all()
+        return {'data':data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Ошибка вывода комментариев {e}')
 
 
 @app.post('/comments/{post_id}')
 def add_comment(post_id:int, data: CommentHandler,  db = Depends(get_db),
                  credentials: JwtAuthorizationCredentials = Security(access_security)):
-    db.add(Comment(post_id = post_id, content = data.comment, author = credentials.subject['login']))
-    db.commit()
+    try:
+        db.add(Comment(post_id = post_id, content = data.comment, author = credentials.subject['login']))
+        db.commit()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Ошибка создания комментариев {e}')
 
 
 @app.get('/weather/{city_name}')
 def make_weather(city_name:str):
-   data = get_weather(city_name)
-   return data
+    try:
+        data = get_weather(city_name)
+        return data
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Ошибка вывода погодыц {e}')

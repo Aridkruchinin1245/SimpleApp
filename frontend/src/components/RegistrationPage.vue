@@ -40,9 +40,14 @@
 
           const token = data.token
 
+        if (data['error']) {
+            alert(data['error'])
+        }
+        else {
           auth.setToken(token)
           router.push('/')
         }
+    }
       catch(error){
         console.log(error)
        }
