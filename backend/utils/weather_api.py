@@ -10,5 +10,3 @@ def get_weather(city:str):
              'description':data['weather'][0]['description'],
                'wind':data['wind']['speed']}
 
-if __name__ == '__main__':
-    print(get_weather('Moscow'))
