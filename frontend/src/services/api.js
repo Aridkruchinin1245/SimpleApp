@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const API = axios.create({
-  baseURL: process.env.VUE_APP_API_URL || 'http://192.168.1.3:8000',
+  baseURL: process.env.VUE_APP_API_URL || 'http://192.168.1.3:8000', // <=== insert there
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -40,11 +40,19 @@ export const postService = {
     }
   })
     },
-    async addLikes(id) {
-        await API.get(`/addLike/${Number(id)}`)
+    async addLikes(id, token) {
+        await API.get(`/addLike/${Number(id)}`, {}, {headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }})
     },
-    async addDislikes(id) {
-     await API.get(`/addDislike/${Number(id)}`)
+    async addDislikes(id, token) {
+     await API.get(`/addDislike/${Number(id)}`, {}, {headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+    
+  })
     },
     async deleteData() {
         await API.post('/postDelete', {'command' : 'delete'})

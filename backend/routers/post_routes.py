@@ -2,7 +2,8 @@ from backend.database import get_db
 from fastapi import APIRouter, HTTPException, Depends, Security
 from fastapi.responses import JSONResponse
 from fastapi_jwt import JwtAuthorizationCredentials
-from backend.models import Post, Comment, CommandHandler, PostCreate, CommentHandler
+from backend.models import Post, Comment
+from backend.schemas import PostCreate, CommandHandler, CommentHandler
 from sqlalchemy import text
 from backend.security.jwt_handler import access_security
 
@@ -47,7 +48,9 @@ async def delete_data(command: CommandHandler, db = Depends(get_db)):
 
 
 @router.get('/addDislike/{id}')
-async def addDislike(id : int, db = Depends(get_db)):
+async def addDislike(id : int,
+                      db = Depends(get_db),
+                      credentials: JwtAuthorizationCredentials = Security(access_security)):
     try:
         post = db.query(Post).filter(Post.id == id).first()
         
@@ -61,7 +64,9 @@ async def addDislike(id : int, db = Depends(get_db)):
 
 
 @router.get('/addLike/{id}')
-async def addLike(id : int, db = Depends(get_db)):
+async def addLike(id : int,
+                  db = Depends(get_db),
+                  credentials: JwtAuthorizationCredentials = Security(access_security)):
     try:
         post = db.query(Post).filter(Post.id == id).first()
         

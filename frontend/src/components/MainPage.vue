@@ -56,6 +56,7 @@
       const items = ref([])
       const login = ref("")
       const content = ref("")
+      const clicked = ref([])
 
       const fetchItems = async() => {
         try {
@@ -80,12 +81,29 @@
     }
 
        const addLike = async (id) => {
-        await postService.addLikes(id)
-        await fetchItems() 
+        if (auth.getToken().length>0) {
+          if (!clicked.value.includes(id)) {
+            await postService.addLikes(id, auth.getToken())
+            clicked.value.push(id)
+            await fetchItems() 
+          }
+      }
+      else {
+        alert('Зарегистрируйся')
+      }
       }
       const addDislike = async (id) => {
-        await postService.addDislikes(id)
-        await fetchItems() 
+        if (auth.getToken().length>0) {
+          if (!clicked.value.includes(id)) {
+            console.log(auth.getToken())
+            await postService.addDislikes(id, auth.getToken())
+            clicked.value.push(id)
+            await fetchItems() 
+        }
+        else {
+          alert('Зарегистрируйся')
+        }
+      }
         
       }
       const clearDatabase = async() => {
@@ -113,50 +131,6 @@
     }
   }
 </script>
-
-<!-- <style scoped>
-    .bright {
-      color: blue;
-      font-size: large;
-    }
-    .main {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      min-height: 75vh; 
-    }
-    .footer {
-      text-align: center;
-    }
-    .header {
-      text-align: center;
-    }
-    .post {
-      border:1px solid black;
-      border-radius: 10px;
-      padding: 10px;
-      margin: 10px;
-    }
-    .author {
-      text-align: start;
-      color: darkgrey;
-    }
-    .date {
-      text-align: start;
-      color: darkgrey;
-      font-size: 8pt;
-    }
-    img {
-      width: 20px;
-      height: 20px;
-    }
-    .likebar {
-      text-align: end;
-    }
-    .h-el {
-      margin: 10px;
-    }
-</style> -->
 
 <template>
   <!DOCTYPE html>

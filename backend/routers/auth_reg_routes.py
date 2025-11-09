@@ -1,7 +1,8 @@
 from fastapi_jwt import JwtAuthorizationCredentials
 from fastapi import Depends, Security, HTTPException, Response, APIRouter
-from backend.models import User, AuthorisationHandler, RegistrationHandler
-from backend.security.jwt_handler import access_security, get_subject, create_token
+from backend.models import User
+from backend.schemas import AuthorisationHandler, RegistrationHandler
+from backend.security.jwt_handler import access_security, create_token
 from backend.database import get_db
 
 router = APIRouter()
@@ -40,6 +41,5 @@ def registration(data: RegistrationHandler, db = Depends(get_db)):
         token = create_token(data=dict(data))
         
         return {'token' : token}
-    
     else: 
-        return {'error' : check}
+        raise HTTPException(status_code=409, detail='Пользователь уже есть')

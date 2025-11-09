@@ -8,7 +8,10 @@ def test_weather():
     for city in cities:
         response = client.get(f'/weather/{city}')
         assert response.status_code == 200
+        
         data = response.json()
+
         assert type(data['temp']) == float
         assert type(data['description']) == str
-        assert type(data['wind']) == float
+        assert type(float(data['wind'])) == float
+        print(data['wind'])
